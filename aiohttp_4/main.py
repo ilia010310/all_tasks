@@ -8,7 +8,7 @@ total = 0
 pages_list = []
 
 
-async def get_length(page: str, session: aiohttp.client.ClientSession, semaphore) -> None:
+async def get_length(page: str, session: aiohttp.client.ClientSession, semaphore: asyncio.locks.Semaphor) -> None:
     global total
     async with semaphore, session.head(page) as data:
         if data.status == 200:
@@ -18,7 +18,7 @@ async def get_length(page: str, session: aiohttp.client.ClientSession, semaphore
         else:
             print('Error')
 
-async def get_photos(page: str, session: aiohttp.client.ClientSession, semaphore) -> None:
+async def get_photos(page: str, session: aiohttp.client.ClientSession, semaphore: asyncio.locks.Semaphor) -> None:
     global pages_list
     async with semaphore, session.get(page) as response:
         result = await response.text()
