@@ -122,6 +122,7 @@ class GamePole:
             print()
 
     def open_cell(self, row: int, column: int) -> bool:
+        """Открытие клетки и проверка на бомбу"""
         self.pole[row - 1][column - 1].fl_open = True
         if self.pole[row - 1][column - 1].mine:
             return False
@@ -129,30 +130,58 @@ class GamePole:
             return True
 
     def open_mine(self, row: int, column: int) -> bool:
+        """Открытие клетки, где предроложительно расположена бомба"""
         self.pole[row - 1][column - 1].fl_open = True
         if self.pole[row - 1][column - 1].mine:
             return True
         else:
             return False
+
     def play(self):
+        """Метод, который запускает игру и перчатает все необходимое для нее.
+        Также обрабатывает ошибки ввода."""
         print()
         self.show()
         print()
         print("Вы хотите попробовать открыть клеточку(введите 1)?\n"
               "Хотите обнаружить бомбу(введите 2)?")
-        num = int(input())
+        # Обработка некоректного ввода
+        try:
+            num = int(input())
+        except:
+            print()
+            print('Вы ввели некоректное значение, попробуем еще раз')
+            self.play()
+        # Сценарий открытия клеточки без бомбы
         if num == 1:
             print('Введите число строчки и столбика через пробел', end=' ')
-            row, column = [int(i) for i in input().split()]
+            # Проверка на коректность ввода
+            try:
+                row, column = [int(i) for i in input().split()]
+                # дополнительная проверка на диапазон чисел, доступных в игре
+                if row > self.size_of_pole or column > self.size_of_pole:
+                    raise ValueError
+            except:
+                print('Вы ввели некоркетное значение, попробуем еще раз')
+                self.play()
             result = self.open_cell(row, column)
             if result:
                 print()
                 self.play()
             else:
                 print('Вы проирали')
+        # Сценарий открытия клеточки с бомбой
         elif num == 2:
+            print()
             print('Введите число строчки и столбика через пробел', end=' ')
-            row, column = [int(i) for i in input().split()]
+            try:
+                row, column = [int(i) for i in input().split()]
+                # дополнительная проверка на диапазон чисел, доступных в игре
+                if row > self.size_of_pole or column > self.size_of_pole:
+                    raise ValueError
+            except:
+                print('Вы ввели некоркетное значение, попробуем еще раз')
+                self.play()
             result = self.open_mine(row, column)
             if result:
                 print()
@@ -164,9 +193,7 @@ class GamePole:
             self.play()
 
 
-
 n = 10  # размер поля
 m = 12  # количество мин
 pole_game = GamePole(n, m)
 pole_game.play()
-
