@@ -19,22 +19,75 @@ class GamePole:
         self.pole = None
         self.init()
 
-    @staticmethod
-    def set_mine(cell: Cell) -> None:
-        cell.mine = True
 
-    def init(self):
-        """Инициализация поля с новой расстановкой мин."""
-        mins_quantity = self.mins_quantity
+    def __set_nums_around_mine(self, row: int, column: int) -> None:
+        """Изменения цифр вокруг бомбы"""
+        if row == 0:
+            if column == 0:
+                self.pole[row][1].around_mines += 1
+                self.pole[row + 1][1].around_mines += 1
+                self.pole[row + 1][0].around_mines += 1
+            elif column == self.size_of_pole - 1:
+                self.pole[row][column - 1].around_mines += 1
+                self.pole[row + 1][column].around_mines += 1
+                self.pole[row + 1][column - 1].around_mines += 1
+            else:
+                self.pole[row][column + 1].around_mines += 1
+                self.pole[row][column - 1].around_mines += 1
+                self.pole[row + 1][column].around_mines += 1
+                self.pole[row + 1][column + 1].around_mines += 1
+                self.pole[row + 1][column - 1].around_mines += 1
+
+        elif row == self.size_of_pole - 1:
+            if column == 0:
+                self.pole[row][1].around_mines += 1
+                self.pole[row - 1][1].around_mines += 1
+                self.pole[row - 1][0].around_mines += 1
+            elif column == self.size_of_pole - 1:
+                self.pole[row][column - 1].around_mines += 1
+                self.pole[row - 1][column].around_mines += 1
+                self.pole[row - 1][column - 1].around_mines += 1
+            else:
+                self.pole[row][column + 1].around_mines += 1
+                self.pole[row][column - 1].around_mines += 1
+                self.pole[row - 1][column].around_mines += 1
+                self.pole[row - 1][column + 1].around_mines += 1
+                self.pole[row - 1][column - 1].around_mines += 1
+        else:
+            if column == 0:
+                self.pole[row][1].around_mines += 1
+                self.pole[row + 1][1].around_mines += 1
+                self.pole[row - 1][1].around_mines += 1
+                self.pole[row - 1][0].around_mines += 1
+                self.pole[row + 1][0].around_mines += 1
+            elif column == self.size_of_pole - 1:
+                self.pole[row][column - 1].around_mines += 1
+                self.pole[row - 1][column].around_mines += 1
+                self.pole[row - 1][column - 1].around_mines += 1
+                self.pole[row + 1][column].around_mines += 1
+                self.pole[row + 1][column - 1].around_mines += 1
+
+            else:
+                self.pole[row][column + 1].around_mines += 1
+                self.pole[row][column - 1].around_mines += 1
+                self.pole[row - 1][column].around_mines += 1
+                self.pole[row - 1][column + 1].around_mines += 1
+                self.pole[row - 1][column - 1].around_mines += 1
+                self.pole[row + 1][column + 1].around_mines += 1
+                self.pole[row + 1][column - 1].around_mines += 1
+                self.pole[row + 1][column].around_mines += 1
+
+    def __create_empty_pole(self, size_of_pole: int) -> None:
+        """Создаем пустое игровое поле"""
         self.pole = []
-        # Сначала создаем пустое поле
-        for i in range(self.size_of_pole):
+        for i in range(size_of_pole):
             row = []
-            for j in range(self.size_of_pole):
+            for j in range(size_of_pole):
                 row.append(Cell())
             self.pole.append(row)
-        # установка бомб
-        mines = self.mins_quantity
+
+    def __install_mines(self, mines: int):
+        """Устанавливаем бомбы на пустое поле"""
         while mines:
             position = random.randrange(0, self.size_of_pole ** 2)
 
@@ -48,63 +101,20 @@ class GamePole:
             else:
                 self.pole[column][position].mine = True
                 mines -= 1
-
             # расстановка цифр вокруг бомбы
+            self.__set_nums_around_mine(column, position)
 
-            if column == 0:
-                if position == 0:
-                    self.pole[column][1].around_mines += 1
-                    self.pole[column + 1][1].around_mines += 1
-                    self.pole[column + 1][0].around_mines += 1
-                elif position == self.size_of_pole - 1:
-                    self.pole[column][position - 1].around_mines += 1
-                    self.pole[column + 1][position].around_mines += 1
-                    self.pole[column + 1][position - 1].around_mines += 1
-                else:
-                    self.pole[column][position + 1].around_mines += 1
-                    self.pole[column][position - 1].around_mines += 1
-                    self.pole[column + 1][position].around_mines += 1
-                    self.pole[column + 1][position + 1].around_mines += 1
-                    self.pole[column + 1][position - 1].around_mines += 1
 
-            elif column == self.size_of_pole - 1:
-                if position == 0:
-                    self.pole[column][1].around_mines += 1
-                    self.pole[column - 1][1].around_mines += 1
-                    self.pole[column - 1][0].around_mines += 1
-                elif position == self.size_of_pole - 1:
-                    self.pole[column][position - 1].around_mines += 1
-                    self.pole[column - 1][position].around_mines += 1
-                    self.pole[column - 1][position - 1].around_mines += 1
-                else:
-                    self.pole[column][position + 1].around_mines += 1
-                    self.pole[column][position - 1].around_mines += 1
-                    self.pole[column - 1][position].around_mines += 1
-                    self.pole[column - 1][position + 1].around_mines += 1
-                    self.pole[column - 1][position - 1].around_mines += 1
-            else:
-                if position == 0:
-                    self.pole[column][1].around_mines += 1
-                    self.pole[column + 1][1].around_mines += 1
-                    self.pole[column - 1][1].around_mines += 1
-                    self.pole[column - 1][0].around_mines += 1
-                    self.pole[column + 1][0].around_mines += 1
-                elif position == self.size_of_pole - 1:
-                    self.pole[column][position - 1].around_mines += 1
-                    self.pole[column - 1][position].around_mines += 1
-                    self.pole[column - 1][position - 1].around_mines += 1
-                    self.pole[column + 1][position].around_mines += 1
-                    self.pole[column + 1][position - 1].around_mines += 1
+    def init(self):
+        """Инициализация поля с новой расстановкой мин."""
+        self.__create_empty_pole(self.size_of_pole)
+        # установка бомб
+        mines = self.mins_quantity
+        self.__install_mines(mines)
 
-                else:
-                    self.pole[column][position + 1].around_mines += 1
-                    self.pole[column][position - 1].around_mines += 1
-                    self.pole[column - 1][position].around_mines += 1
-                    self.pole[column - 1][position + 1].around_mines += 1
-                    self.pole[column - 1][position - 1].around_mines += 1
-                    self.pole[column + 1][position + 1].around_mines += 1
-                    self.pole[column + 1][position - 1].around_mines += 1
-                    self.pole[column + 1][position].around_mines += 1
+
+
+
 
     def show(self) -> None:
         """Отображение поля в консоли. Если клетка не открыта, то отображается символ #;
@@ -161,10 +171,11 @@ class GamePole:
                 # дополнительная проверка на диапазон чисел, доступных в игре
                 if row > self.size_of_pole or column > self.size_of_pole:
                     raise ValueError
+                result = self.open_cell(row, column)
             except:
                 print('Вы ввели некоркетное значение, попробуем еще раз')
                 self.play()
-            result = self.open_cell(row, column)
+
             if result:
                 print()
                 self.play()
@@ -179,10 +190,11 @@ class GamePole:
                 # дополнительная проверка на диапазон чисел, доступных в игре
                 if row > self.size_of_pole or column > self.size_of_pole:
                     raise ValueError
+                result = self.open_mine(row, column)
             except:
                 print('Вы ввели некоркетное значение, попробуем еще раз')
                 self.play()
-            result = self.open_mine(row, column)
+
             if result:
                 print()
                 self.play()
